@@ -70,13 +70,17 @@ const EventBlock = ({
       event.startHour + event.duration - 24,
       0
     );
-    const eventDuration =
+    const eventDurationValue =
       event.duration - eventHoursPreviusDays - eventHoursNextDays;
     const eventStartHour = event.startHour + eventHoursPreviusDays;
 
-    let eventHeight = eventDuration * heightByTimeInterval.value;
+    let eventStartHourValue = eventStartHour * heightByTimeInterval.value;
 
-    eventHeight -= 1; // Minus 1 to fix holding down and then swiping left or right not doing so, when event is to the bottom of the screen. On Android.
+    let eventHeight = eventDurationValue * heightByTimeInterval.value;
+
+    // Hotfix for bug in android: It opens the drawer with react-navigation when swiping left or right on an event if that event is right at the bottom or top of the screen.
+    eventStartHourValue += 1;
+    eventHeight -= 2;
 
     if (theme.minimumEventHeight) {
       eventHeight = Math.max(theme.minimumEventHeight, eventHeight);
@@ -84,7 +88,7 @@ const EventBlock = ({
 
     if (isPinchActive.value) {
       return {
-        top: eventStartHour * heightByTimeInterval.value,
+        top: eventStartHourValue,
         height: eventHeight,
         left: event.left + columnWidth * dayIndex,
         width: event.width,
@@ -95,7 +99,7 @@ const EventBlock = ({
     const hasNextDay = eventHoursNextDays > 0;
 
     return {
-      top: withTiming(eventStartHour * heightByTimeInterval.value, {
+      top: withTiming(eventStartHourValue, {
         duration: eventAnimatedDuration,
       }),
       height: withTiming(eventHeight, {
