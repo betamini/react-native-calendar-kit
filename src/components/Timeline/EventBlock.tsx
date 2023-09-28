@@ -65,7 +65,18 @@ const EventBlock = ({
   };
 
   const eventStyle = useAnimatedStyle(() => {
-    let eventHeight = event.duration * heightByTimeInterval.value;
+    const eventHoursPreviusDays = Math.max(event.startHour * -1, 0);
+    const eventHoursNextDays = Math.max(
+      event.startHour + event.duration - 24,
+      0
+    );
+    const eventDuration =
+      event.duration - eventHoursPreviusDays - eventHoursNextDays;
+    const eventStartHour = event.startHour + eventHoursPreviusDays;
+
+    let eventHeight = eventDuration * heightByTimeInterval.value;
+
+    eventHeight -= 1; // Minus 1 to fix holding down and then swiping left or right not doing so, when event is to the bottom of the screen. On Android.
 
     if (theme.minimumEventHeight) {
       eventHeight = Math.max(theme.minimumEventHeight, eventHeight);
@@ -73,7 +84,7 @@ const EventBlock = ({
 
     if (isPinchActive.value) {
       return {
-        top: event.startHour * heightByTimeInterval.value,
+        top: eventStartHour * heightByTimeInterval.value,
         height: eventHeight,
         left: event.left + columnWidth * dayIndex,
         width: event.width,
@@ -81,7 +92,7 @@ const EventBlock = ({
     }
 
     return {
-      top: withTiming(event.startHour * heightByTimeInterval.value, {
+      top: withTiming(eventStartHour * heightByTimeInterval.value, {
         duration: eventAnimatedDuration,
       }),
       height: withTiming(eventHeight, {
