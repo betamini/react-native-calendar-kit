@@ -91,6 +91,9 @@ const EventBlock = ({
       };
     }
 
+    const hasPreviusDay = eventHoursPreviusDays > 0;
+    const hasNextDay = eventHoursNextDays > 0;
+
     return {
       top: withTiming(eventStartHour * heightByTimeInterval.value, {
         duration: eventAnimatedDuration,
@@ -104,6 +107,10 @@ const EventBlock = ({
       width: withTiming(event.width, {
         duration: eventAnimatedDuration,
       }),
+      borderTopLeftRadius: hasPreviusDay ? 0 : 4,
+      borderTopRightRadius: hasPreviusDay ? 0 : 4,
+      borderBottomLeftRadius: hasNextDay ? 0 : 4,
+      borderBottomRightRadius: hasNextDay ? 0 : 4,
     };
   }, [event]);
 
@@ -162,7 +169,6 @@ export default memo(EventBlock, areEqual);
 const styles = StyleSheet.create({
   eventBlock: {
     position: 'absolute',
-    borderRadius: 4,
     overflow: 'hidden',
   },
   title: {
@@ -170,5 +176,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     fontSize: 10,
     color: DEFAULT_PROPS.BLACK_COLOR,
+  },
+  borderTop: {
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+  },
+  borderBottom: {
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
   },
 });
